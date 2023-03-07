@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon server.js"
+    "watch": "nodemon server.js"
   },
   "author": "GhostOrder28",
   "license": "ISC",
