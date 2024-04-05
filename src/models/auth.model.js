@@ -28,8 +28,11 @@ async function signin (knex, userEmail, t) {
   } catch (error) {
     console.error('there is an error when trying to select users or userCredentials tables', error);
     console.error('error.code: ', error.code);
-    if (error.code === 'ECONNREFUSED') throw new DbConnectionError(t('noDbConnectionErrorMsg'));
-    if (error.code === INVALID_AUTHORIZATION_SPECIFICATION) throw new InvalidAuthorizationError(t('noDbConnectionErrorMsg'));
+    if (
+      error.code === 'ECONNREFUSED' ||
+      error.code === 'ENOTFOUND' ||
+      error.code === INVALID_AUTHORIZATION_SPECIFICATION
+    ) throw new DbConnectionError(t('noDbConnectionErrorMsg'));
   }
 }
 
