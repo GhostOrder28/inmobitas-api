@@ -48,5 +48,6 @@
 	"naturalGas": "Natural Gas",
 	"estateDetails": "EstateDetails",
 	"yes": "Yes",
-	"no": "No"
+	"no": "No",
+  "noDbConnectionErrorMsg": "The server couldn't connect to the database, please try again later."
 }

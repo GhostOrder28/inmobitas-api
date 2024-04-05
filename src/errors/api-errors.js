@@ -13,4 +13,15 @@ class AuthorizationError extends Error {
   }
 }
 
-module.exports = { ValidationError, AuthorizationError };
+class DbConnectionError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "DbConnectionError";
+  }
+}
+
+module.exports = {
+  ValidationError, 
+  AuthorizationError, 
+  DbConnectionError
+};

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const { ValidationError } = require('../errors/api-errors');
-const { AuthenticationError } = require('../errors/db-errors');
+const { ValidationError, DbConnectionError } = require('../errors/api-errors');
+const { AuthenticationError, InvalidAuthorizationError } = require('../errors/db-errors');
 
 const { signin } = require('../models/auth.model');
 
@@ -15,7 +15,7 @@ async function verifyCallback (req, username, password, done) {
   console.log('verify callback reached');
   const { knexInstance, t } = req;
   try {
-    const signinData = await signin(knexInstance, username);
+    const signinData = await signin(knexInstance, username, t);
 
     if (!signinData) throw new AuthenticationError(t('wrongCredentials'));
     
@@ -34,7 +34,9 @@ async function verifyCallback (req, username, password, done) {
   } catch (error) {
     if (
       error instanceof AuthenticationError ||
-      error instanceof ValidationError 
+      error instanceof ValidationError  ||
+      error instanceof DbConnectionError ||
+      error instanceof InvalidAuthorizationError
     ) return done(null, false, error);
     return done(error);
   }

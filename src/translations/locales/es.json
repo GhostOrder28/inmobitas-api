@@ -48,5 +48,6 @@
 	"naturalGas": "Gas Natural",
 	"estateDetails": "Detalles de la propiedad",
 	"yes": "Sí",
-	"no": "No"
+	"no": "No",
+  "noDbConnectionErrorMsg": "El servidor no pudo conectarse a la base de datos, porfavor intenta más tarde."
 }

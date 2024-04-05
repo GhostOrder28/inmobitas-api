@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
-const { ValidationError } = require('../../errors/api-errors');
+const { ValidationError, DbConnectionError } = require('../../errors/api-errors');
 const { formatDbResponse } = require('../../utils/utility-functions');
 const { AuthenticationError, DuplicateEntityError } = require('../../errors/db-errors');
 
@@ -49,6 +49,7 @@ function httpSignin () {
       )(req, res, next);
     } catch (error) {
       if (error instanceof ValidationError) return next(error);
+      if (error instanceof DbConnectionError) return next(error);
       throw new Error(`There is an error, ${error}`);
     }
   }

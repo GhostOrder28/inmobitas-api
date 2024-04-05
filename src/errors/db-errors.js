@@ -20,8 +20,17 @@ class UnverifiedUserError extends Error {
   }
 }
 
+class InvalidAuthorizationError extends Error {
+  constructor(message, errorDetails) {
+    super(message);
+    this.name = "InvalidAuthorizationError";
+    this.errorDetails = errorDetails;
+  }
+}
+
 module.exports = {
   AuthenticationError,
   DuplicateEntityError,
-  UnverifiedUserError
+  UnverifiedUserError,
+  InvalidAuthorizationError
 };

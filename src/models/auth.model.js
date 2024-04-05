@@ -1,12 +1,12 @@
-const { UNIQUE_VIOLATION } = require('pg-error-constants');
+const { UNIQUE_VIOLATION, INVALID_AUTHORIZATION_SPECIFICATION } = require('pg-error-constants');
 const { strParseIn } = require('../utils/utility-functions');
-const { DuplicateEntityError } = require('../errors/db-errors');
+const { DuplicateEntityError, InvalidAuthorizationError } = require('../errors/db-errors');
+const { DbConnectionError } = require('../errors/api-errors');
 const { formatDbResponse } = require('../utils/utility-functions');
 
-async function signin (knex, userEmail) {
+async function signin (knex, userEmail, t) {
   
   try {
-    console.log('selecting info from users table...')
     const userProfileData = await knex.select('user_id', 'email', 'names')
       .from('users')
       .where('email', '=', userEmail)
@@ -26,8 +26,10 @@ async function signin (knex, userEmail) {
     const userData = { ...userProfileData[0], ...userCredentials[0] }
     return userData;
   } catch (error) {
-    console.log('there is an error when trying to select users or userCredentials tables');
-    console.log(error);
+    console.error('there is an error when trying to select users or userCredentials tables', error);
+    console.error('error.code: ', error.code);
+    if (error.code === 'ECONNREFUSED') throw new DbConnectionError(t('noDbConnectionErrorMsg'));
+    if (error.code === INVALID_AUTHORIZATION_SPECIFICATION) throw new InvalidAuthorizationError(t('noDbConnectionErrorMsg'));
   }
 }
 
