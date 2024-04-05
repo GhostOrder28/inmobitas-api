@@ -32,6 +32,7 @@ const eventsRouter = require('./routes/events/events.router');
 const clientRouter = require('./routes/clients/clients.router');
 const picturesRouter = require('./routes/pictures/pictures.router');
 const listingsRouter = require('./routes/listings/listings.router');
+const categoriesRouter = require('./routes/categories/categories.router');
 const presentationsRouter = require('./routes/presentations/presentations.router');
 const checkVerifiedRouter = require('./routes/check-verified/check-verified.router');
 const listingPresetsRouter = require('./routes/listing-presets/listing-presets.router');
@@ -73,11 +74,11 @@ passport.deserializeUser((id, done) => {
 
 //middelwares
 app.use(helmet(helmetOptions));
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(cookieSession(cookieSessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static(path.join(__dirname, "..", "public")));
+// app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded(urlencodedOptions));
 app.use(morgan('combined'));
@@ -85,28 +86,29 @@ app.use(middleware.handle(i18next));
 
 //routes
 app.use('/auth', authRouter);
-app.get('/signin', (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
-});
-app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
-});
+// app.get('/signin', (req, res) => {
+//   res.sendFile(path.join(__dirname, "../public/index.html"));
+// });
+// app.get('/signup', (req, res) => {
+//   res.sendFile(path.join(__dirname, "../public/index.html"));
+// });
 app.use(checkUserType);
 app.use(checkLoggedIn);
 app.use('/listings', listingsRouter);
 app.use('/clients', clientRouter);
 app.use('/pictures', picturesRouter);
+app.use('/categories', categoriesRouter);
 app.use('/presentations', presentationsRouter);
 app.use('/events', eventsRouter);
 app.use('/listingpresets', listingPresetsRouter);
 app.use('/checkverified', checkVerifiedRouter);
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
-});
-app.get('/service-worker.js', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-  res.sendFile(path.resolve(__dirname, '..', 'public', 'service-worker.js'));
-});
+// app.get('/*', function (req, res) {
+//   res.sendFile(path.join(__dirname, "../public/index.html"));
+// });
+// app.get('/service-worker.js', (req, res) => {
+//   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+//   res.sendFile(path.resolve(__dirname, '..', 'public', 'service-worker.js'));
+// });
 app.use(errorHandler);
 //app.use((err, req, res, next) => res.sendStatus(500));
 

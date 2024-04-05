@@ -22,6 +22,8 @@ async function getAllPictures (knex, params, userType) {
       const formattedPictures = pictures.map(pic => ({
         pictureId: pic.picture_id,
         filename: pic.filename,
+        categoryId: pic.category_id,
+        position: pic.position,
         smallSizeUrl: pic.auto_generated ?
           getGuestPictureUrl(pic.filename, 'small') :
           getPictureUrl(userid, estateid, pic.filename, 'small', userType),
@@ -30,7 +32,7 @@ async function getAllPictures (knex, params, userType) {
           getPictureUrl(userid, estateid, pic.filename, 'large', userType),
       }))
 
-      console.log('formattedPictures: ', formattedPictures);
+      // console.log('formattedPictures: ', formattedPictures);
 
       return formattedPictures;
     } catch (err) {
