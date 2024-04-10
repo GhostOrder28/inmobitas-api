@@ -21,8 +21,9 @@ function httpPostCategory () {
   return async (req, res) => {
     const { params: { estateid }, knexInstance, body } = req;
     try {
-      const category = await postCategory(knexInstance, estateid, body);
-      return res.status(200).json(category);
+      const newCategory = await postCategory(knexInstance, estateid, body);
+
+      return res.status(200).json(newCategory);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
     }
@@ -31,7 +32,6 @@ function httpPostCategory () {
 
 function httpPatchCategoryName () {
   return async (req, res) => {
-    console.log('req.params: ', req.params);
     const { params: { categoryid }, knexInstance, user: { userType }, body: { name } } = req;
     try {
       const updatedName = await patchCategoryName(knexInstance, categoryid, name);

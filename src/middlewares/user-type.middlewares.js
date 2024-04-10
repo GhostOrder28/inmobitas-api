@@ -3,6 +3,7 @@ const { AuthenticationError } = require('../errors/db-errors');
 
 function checkUserType (req, res, next) {
   try {
+    console.log("either one of these shouldn't be undefined to pass the usertype check");
     console.log('req.user: ', req.user);
     console.log('req.params.usertype: ', req.params.usertype);
 

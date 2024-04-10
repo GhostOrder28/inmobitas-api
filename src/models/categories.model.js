@@ -19,11 +19,12 @@ async function getAllCategories (knex, estateid) {
 
 async function postCategory (knex, estateid, body) {
   try {
-    const category = await knex('categories')
+    const [ newCategory ] = await knex('categories')
       .insert({ ...body, estate_id: estateid })
       .returning('*');
 
-    const formattedCategory = formatDbResponse(category);
+    const formattedCategory = formatDbResponse(newCategory);
+
     return formattedCategory;
   } catch (err) {
     throw new Error(err);
