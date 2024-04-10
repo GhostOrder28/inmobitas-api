@@ -1,4 +1,5 @@
 const { formatDbResponse } = require('../utils/utility-functions');
+const { deletePicture } = require('../models/pictures.model');
 
 async function getAllCategories (knex, estateid) {
   try {
@@ -36,14 +37,31 @@ async function patchCategoryName (knex, categoryid, newName) {
       .update({ name: newName })
       .returning('*');
 
-    return category.name;
+    const formattedCategory = formatDbResponse(category);
+    return formattedCategory.name;
   } catch (err) {
     throw new Error(err);
   }
 }
 
-async function deleteCategory (knex, categoryid) {
+async function deleteCategory (knex, userid, estateid, categoryid, userType) {
   try {
+    // delete first the pictures
+
+    const picturesToDelete = await knex.select('picture_id')
+      .from('pictures')
+      .where('category_id', categoryid)
+      .returning('*');
+
+    console.log('picturesToDelete: ', picturesToDelete);
+
+    const params = { userid, estateid };
+
+    picturesToDelete.forEach(async (p) => {
+      params.pictureid = p.picture_id
+      await deletePicture(knex, params, userType);
+    })
+
     const [ deletedCategory ] = await knex('categories')
       .where('category_id', categoryid)
       .del()

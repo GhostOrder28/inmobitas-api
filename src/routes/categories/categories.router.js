@@ -12,7 +12,7 @@ const categoriesRouter = express.Router();
 categoriesRouter.get('/:userid/:estateid', httpGetAllCategories());
 categoriesRouter.post('/:userid/:estateid', httpPostCategory());
 categoriesRouter.patch('/:categoryid', httpPatchCategoryName());
-categoriesRouter.delete('/:userid/:estateid/:pictureid', httpDeleteCategory());
+categoriesRouter.delete('/:userid/:estateid/:categoryid', httpDeleteCategory());
 
 module.exports = categoriesRouter;
 

@@ -18,9 +18,9 @@ function httpGetAllPictures () {
 
 function httpPostPicture () {
   return async (req, res) => {
-    const { params, knexInstance, file, user: { userType } } = req;
+    const { params, knexInstance, file, user: { userType }, body: { categoryId, position } } = req;
     try {
-      const picture = await postPicture(knexInstance, params, file, userType);
+      const picture = await postPicture(knexInstance, params, file, userType, categoryId, position);
       return res.status(200).json(picture);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);

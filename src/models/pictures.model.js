@@ -79,7 +79,7 @@ async function postGuestPicture (knex, params, filename) {
   }
 }
 
-async function postPicture (knex, params, file, userType) {
+async function postPicture (knex, params, file, userType, categoryId, position) {
 
   const { userid, estateid } = params;
   const { buffer } = file;
@@ -117,19 +117,23 @@ async function postPicture (knex, params, file, userType) {
 
       console.log('uploadedPictures: ', uploadedPictures);
 
-      const picture = await knex.insert({
+      const [ picture ] = await knex.insert({
         user_id: userid,
         estate_id: estateid,
         filename,
+        category_id: !isNaN(categoryId) ? categoryId : null,
+        position,
       })
         .into('pictures')
         .returning('*')
 
       const formattedPicture = {
-        pictureId: picture[0].picture_id,
-        filename,
-        smallSizeUrl: getPictureUrl(userid, estateid, filename, 'small', userType),
-        largeSizeUrl: getPictureUrl(userid, estateid, filename, 'large', userType),
+        pictureId: picture.picture_id,
+        filename: picture.filename,
+        smallSizeUrl: getPictureUrl(userid, estateid, picture.filename, 'small', userType),
+        largeSizeUrl: getPictureUrl(userid, estateid, picture.filename, 'large', userType),
+        categoryId: picture.category_id,
+        position: picture.position,
       } 
 
       console.log('formattedPicture: ', formattedPicture);

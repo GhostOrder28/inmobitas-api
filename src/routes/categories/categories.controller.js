@@ -31,10 +31,11 @@ function httpPostCategory () {
 
 function httpPatchCategoryName () {
   return async (req, res) => {
+    console.log('req.params: ', req.params);
     const { params: { categoryid }, knexInstance, user: { userType }, body: { name } } = req;
     try {
       const updatedName = await patchCategoryName(knexInstance, categoryid, name);
-      return res.status(200).json(updatedName);
+      return res.status(200).json({ updatedName });
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
     }
@@ -43,9 +44,9 @@ function httpPatchCategoryName () {
 
 function httpDeleteCategory () {
   return async (req, res) => {
-    const { params: { categoryid }, knexInstance, user: { userType } } = req;
+    const { params: { categoryid, userid, estateid }, knexInstance, user: { userType } } = req;
     try {
-      const deletedCategory = await deleteCategory(knexInstance, categoryid, userType);
+      const deletedCategory = await deleteCategory(knexInstance, userid, estateid, categoryid, userType);
       return res.status(200).json(deletedCategory);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);

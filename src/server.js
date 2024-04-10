@@ -37,7 +37,6 @@ const presentationsRouter = require('./routes/presentations/presentations.router
 const checkVerifiedRouter = require('./routes/check-verified/check-verified.router');
 const listingPresetsRouter = require('./routes/listing-presets/listing-presets.router');
 
-
 // const server = https.createServer({
 //   cert: fs.readFileSync(`${path.resolve()}/src/security/cert.pem`),
 //   key: fs.readFileSync(`${path.resolve()}/src/security/cert.key`)
@@ -78,7 +77,6 @@ app.use(cors(corsOptions));
 app.use(cookieSession(cookieSessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded(urlencodedOptions));
 app.use(morgan('combined'));
@@ -86,12 +84,6 @@ app.use(middleware.handle(i18next));
 
 //routes
 app.use('/auth', authRouter);
-// app.get('/signin', (req, res) => {
-//   res.sendFile(path.join(__dirname, "../public/index.html"));
-// });
-// app.get('/signup', (req, res) => {
-//   res.sendFile(path.join(__dirname, "../public/index.html"));
-// });
 app.use(checkUserType);
 app.use(checkLoggedIn);
 app.use('/listings', listingsRouter);
@@ -102,13 +94,6 @@ app.use('/presentations', presentationsRouter);
 app.use('/events', eventsRouter);
 app.use('/listingpresets', listingPresetsRouter);
 app.use('/checkverified', checkVerifiedRouter);
-// app.get('/*', function (req, res) {
-//   res.sendFile(path.join(__dirname, "../public/index.html"));
-// });
-// app.get('/service-worker.js', (req, res) => {
-//   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-//   res.sendFile(path.resolve(__dirname, '..', 'public', 'service-worker.js'));
-// });
 app.use(errorHandler);
 //app.use((err, req, res, next) => res.sendStatus(500));
 
