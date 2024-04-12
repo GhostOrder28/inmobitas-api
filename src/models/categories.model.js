@@ -68,8 +68,7 @@ async function deleteCategory (knex, userid, estateid, categoryid, userType) {
       .del()
       .returning('*');
 
-    const formattedCategory = formatDbResponse(deletedCategory);
-    return formattedCategory;
+    return Number(deletedCategory.category_id);
   } catch (err) {
     throw new Error(err);
   }
