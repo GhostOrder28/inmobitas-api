@@ -1,6 +1,6 @@
 const sharp = require('sharp');
 
-const { randomNumberGenerator } = require('../utils/utility-functions');
+const { randomNumberGenerator, formatDbResponse, sortEntities } = require('../utils/utility-functions');
 const { 
   cloudinaryUploader, 
   getPicturesDirPath, 
@@ -144,16 +144,69 @@ async function postPicture (knex, params, file, userType, categoryId, position) 
     }
 }
 
+async function patchPicturesPosition (knex, userid, estateid, userType, categories) {
+  try {
+    const trxResult = await knex.transaction(async (trx) => {
+      if (categories.length) {
+        const updatedPictures = await Promise.all(categories.map(async cid => await patchPicturesPositionFromCategory(trx, userid, estateid, userType, cid)));
+        return updatedPictures.flat().map(p => formatDbResponse(p));
+      } else {
+        const updatedPicture = await patchPicturesPositionFromCategory(trx, userid, estateid, userType, categories);
+        return updatedPicture;
+      };
+    })
+    return trxResult;
+  } catch (err) {
+    console.error(`there was an error when trying to update the position of some pictures: ${err}`)
+  }
+};
+
+async function patchPicturesPositionFromCategory (knexInstance, userid, estateid, userType, categoryid) {
+  if (!categoryid) categoryid = null; // handle undefined category
+  const pictures = await knexInstance('pictures')
+    .select('*')
+    .where('category_id', categoryid)
+    .andWhere('estate_id', estateid)
+    .returning('*');
+
+  if (!pictures.length) return [];
+
+  const ordered = sortEntities(pictures, 'position')
+
+  const positionUpdated = ordered.map((p, idx) => ({ picture_id: p.picture_id, position: idx + 1 }));
+
+  const updatedData = await Promise.all(positionUpdated.map(async p => {
+    const [ updatedPicture ] = await knexInstance('pictures')
+      .update({ position: p.position })
+      .where('picture_id', p.picture_id)
+      .returning('*');
+
+    const formattedPicture = formatDbResponse(updatedPicture);
+
+    return {
+      ...formattedPicture,
+      smallSizeUrl: updatedPicture.auto_generated ?
+        getGuestPictureUrl(updatedPicture.filename, 'small') :
+        getPictureUrl(userid, estateid, updatedPicture.filename, 'small', userType),
+      largeSizeUrl: updatedPicture.auto_generated ?
+        getGuestPictureUrl(updatedPicture.filename, 'large') :
+        getPictureUrl(userid, estateid, updatedPicture.filename, 'large', userType),
+    };
+  }));
+
+  return updatedData;
+};
+
 async function deletePicture (knex, params, userType) {
   const { userid, estateid, pictureid } = params;
     
     try {
-      const deletedPicture = await knex('pictures')
+      const [ deletedPicture ] = await knex('pictures')
         .where('picture_id', '=', pictureid)
         .del()
-        .returning('*')
+        .returning([ 'picture_id' ])
 
-      const { filename, auto_generated } = deletedPicture[0];
+      const { filename, auto_generated } = deletedPicture;
 
       if (!auto_generated) {
         await Promise.all([
@@ -161,8 +214,8 @@ async function deletePicture (knex, params, userType) {
           deleteResource(getPicturePublicId(userid, estateid, filename, 'large', userType)),
         ])
       }
-      
-      return Number(pictureid);
+
+      return Number(deletedPicture.picture_id);
     } catch (err) {
       throw new Error (`there was an error: ${err}`)
     }
@@ -171,6 +224,7 @@ async function deletePicture (knex, params, userType) {
 module.exports = {
   getAllPictures,
   postPicture,
+  patchPicturesPosition,
   deletePicture,
   getAllGuestsPictures,
   postGuestPicture

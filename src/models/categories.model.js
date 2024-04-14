@@ -45,10 +45,44 @@ async function patchCategoryName (knex, categoryid, newName) {
   }
 }
 
+async function patchCategoriesPosition (knex, estateid) {
+  try {
+    const trxResult = await knex.transaction(async (trx) => {
+      const categories = await trx('categories')
+        .select('*')
+        .where('estate_id', estateid)
+        .returning('*');
+
+      const ordered = categories.sort((a, b) => {
+        if (a.position < b.position) return -1;
+        if (a.position > b.position) return 1;
+        return 0
+      })
+
+      const positionUpdated = ordered.map((c, idx) => ({ category_id: c.category_id, position: idx + 1 }));
+
+      const updatedCategories = await Promise.all(positionUpdated.map(async c => {
+        const [ updatedCategory ] = await trx('categories')
+          .update({ position: c.position })
+          .where('category_id', c.category_id)
+          .returning('*');
+
+        return updatedCategory
+      }));
+
+      const formattedCategories = updatedCategories.map(c => formatDbResponse(c));
+
+      return formattedCategories;
+    })
+
+    return trxResult;
+  } catch (err) {
+    console.error(`there was an error when trying to update the position of some categories: ${err}`)
+  }
+};
+
 async function deleteCategory (knex, userid, estateid, categoryid, userType) {
   try {
-    // delete first the pictures
-
     const picturesToDelete = await knex.select('picture_id')
       .from('pictures')
       .where('category_id', categoryid)
@@ -78,6 +112,7 @@ module.exports = {
   getAllCategories,
   postCategory,
   patchCategoryName,
+  patchCategoriesPosition,
   deleteCategory,
 }
 

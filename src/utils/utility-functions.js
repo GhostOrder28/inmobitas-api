@@ -61,6 +61,16 @@ function formatDbResponse (obj) {
   return formattedResponse;
 }
 
+function sortEntities (arr, key) {
+  const clonedArr = [ ...arr ];
+  clonedArr.sort((a, b) => {
+    if (a[key] < b[key]) return -1;
+    if (a[key] > b[key]) return 1;
+    return 0
+  })
+  return clonedArr;
+};
+
 module.exports = {
   strParseIn,
   strParseOut,
@@ -69,5 +79,6 @@ module.exports = {
   suffixGenerator,
   cloudinaryUnsignedUploader,
   pxToMm,
-  formatDbResponse
+  formatDbResponse,
+  sortEntities,
 }
