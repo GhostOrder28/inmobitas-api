@@ -1,4 +1,5 @@
-const { strParseIn, strParseOut } = require('../utils/utility-functions');
+const { strParseIn, strParseOut, batchDeletePictures } = require('../utils/utility-functions');
+const { getFolder, deleteFolder } = require('../utils/cloudinary');
 const { getListingPresets } = require('./listing-presets.model');
 
 function getGroupedListingData (listing, presets, t) {
@@ -457,19 +458,23 @@ async function postListing (knex, params, listingData, t, clientLang) {
 
 };
 
-async function deleteOneListing (knex, params) {
-  const { userid, listingid } = params;
-
+async function deleteOneListing (identifiers, userType, knexInstance) {
   try {
-  const deletedListing = await knex('estates')
-    .where('user_id', '=', userid)
-    .andWhere('estate_id', '=', listingid)
-    .del()
-    .returning('*')
+    const { userId, estateId } = identifiers;
 
-  console.log('deletedListing: ', deletedListing);
+    const deletedPicturesFromCloudinary = await batchDeletePictures('estate_id', identifiers, userType, knexInstance);
+    console.log('deletedPicturesFromCloudinary: ', deletedPicturesFromCloudinary);
 
-  return deletedListing[0].estate_id;
+    const deletedFolder = await deleteFolder(getFolder('estate', userId, estateId, userType));
+    console.log('deletedFolder: ', deletedFolder);
+
+    const deletedListing = await knexInstance('estates')
+      .where('user_id', userId)
+      .andWhere('estate_id', estateId)
+      .del()
+      .returning('*')
+
+    return Number(deletedListing[0].estate_id);
 
   } catch (error) {
     console.log(error)

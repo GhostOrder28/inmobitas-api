@@ -1,5 +1,4 @@
-const { formatDbResponse } = require('../utils/utility-functions');
-const { deletePicture } = require('../models/pictures.model');
+const { formatDbResponse, batchDeletePictures } = require('../utils/utility-functions');
 
 async function getAllCategories (knex, estateid) {
   try {
@@ -81,30 +80,22 @@ async function patchCategoriesPosition (knex, estateid) {
   }
 };
 
-async function deleteCategory (knex, userid, estateid, categoryid, userType) {
+async function deleteCategory (knex, identifiers, userType) {
   try {
-    const picturesToDelete = await knex.select('picture_id')
-      .from('pictures')
-      .where('category_id', categoryid)
-      .returning('*');
+    const { categoryId } = identifiers;
 
-    console.log('picturesToDelete: ', picturesToDelete);
-
-    const params = { userid, estateid };
-
-    picturesToDelete.forEach(async (p) => {
-      params.pictureid = p.picture_id
-      await deletePicture(knex, params, userType);
-    })
+    // always first delete related pictures from cloudinary
+    const deletedPicturesFromCloudinary = await batchDeletePictures('category_id', identifiers, userType, knex)
+    console.log('deletedPicturesFromCloudinary: ', deletedPicturesFromCloudinary);
 
     const [ deletedCategory ] = await knex('categories')
-      .where('category_id', categoryid)
+      .where('category_id', categoryId)
       .del()
       .returning('*');
 
     return Number(deletedCategory.category_id);
   } catch (err) {
-    throw new Error(err);
+    throw err
   }
 }
 

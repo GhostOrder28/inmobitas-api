@@ -54,9 +54,17 @@ function httpPostListing () {
 
 function httpDeleteOneListing () {
   return async (req, res) => {
-    const { params, knexInstance } = req;
     try {
-      const deletedListingId = await deleteOneListing(knexInstance, params);
+      const {
+        params: { userid, estateid },
+        userType,
+        knexInstance,
+      } = req;
+
+      const identifiers = { userId: userid, estateId: estateid };
+
+      const deletedListingId = await deleteOneListing(identifiers, userType, knexInstance);
+
       return res.status(200).json(deletedListingId);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);

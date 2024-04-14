@@ -25,6 +25,14 @@ const getPicturesDirPath = (userId, estateId, size, userType) => {
   return `/inmobitas_dev/u_${userId}/l_${estateId}/pictures/${size}`
 }
 
+const getFolder = (entity, userId, estateId, userType) => {
+  if (entity === 'estate') {
+    if (userType === 'guest') return `/inmobitas_guest/u_${userId}/l_${estateId}`;
+    if (process.env.NODE_ENV === 'production') return `/inmobitas/u_${userId}/l_${estateId}`;
+    return `/inmobitas_dev/u_${userId}/l_${estateId}`
+  };
+};
+
 const getPdfDirPath = (userId, estateId) =>
   process.env.NODE_ENV === 'production' ?
     `/inmobitas/u_${userId}/l_${estateId}` :
@@ -65,6 +73,16 @@ const deleteResource = (publicId) => {
   })
 }
 
+const deleteFolder = (path) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.api.delete_folder(
+      path,
+      undefined,
+      (error, result) => result ? resolve(result) : reject(error)
+    )
+  })
+}
+
 module.exports = {
   cloudinary,
   bufferToStream,
@@ -76,4 +94,6 @@ module.exports = {
   cloudinaryUploader,
   deleteResource,
   getGuestPictureUrl,
+  deleteFolder,
+  getFolder,
 }

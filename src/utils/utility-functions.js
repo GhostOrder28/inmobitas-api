@@ -1,4 +1,5 @@
 const cloudinary = require('cloudinary').v2;
+const { deleteResource, getPicturePublicId } = require('../utils/cloudinary');
 
 const strParseIn = str => {
   if (str) {
@@ -71,6 +72,39 @@ function sortEntities (arr, key) {
   return clonedArr;
 };
 
+async function batchDeletePictures (key, identifiers, userType, knexInstance) {
+  try {
+    const { userId, estateId, categoryId } = identifiers;
+
+    const value = (
+      key === 'category_id' ? categoryId :
+      key === 'estate_id' ? estateId :
+      null
+    )
+
+    const picturesToDelete = await knexInstance('pictures')
+      .select('*')
+      .where(key, value)
+      .returning('*');
+
+    const deletedPicturedFromCloudinary = await picturesToDelete.reduce(async (acc, curr) => {
+      const { filename, auto_generated } = curr;
+
+      if (auto_generated) return await acc;
+
+      const small = await deleteResource(getPicturePublicId(userId, estateId, filename, 'small', userType));
+      const large = await deleteResource(getPicturePublicId(userId, estateId, filename, 'large', userType));
+
+      return [ ...(await acc), { small, large } ]
+    }, [])
+
+    return deletedPicturedFromCloudinary;
+  } catch (err) {
+    console.error(`there was an error trying to batch delete pictures in cloudinary: ${err}`)
+    throw new Error(err)
+  }
+};
+
 module.exports = {
   strParseIn,
   strParseOut,
@@ -81,4 +115,5 @@ module.exports = {
   pxToMm,
   formatDbResponse,
   sortEntities,
+  batchDeletePictures,
 }

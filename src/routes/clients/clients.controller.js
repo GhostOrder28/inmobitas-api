@@ -48,9 +48,17 @@ function httpUpdateOneClient () {
 
 function httpDeleteOneListing () {
   return async (req, res) => {
-    const { params, knexInstance } = req;
     try {
-      const deletedClientId = await deleteOneClient(knexInstance, params);
+      const { 
+        params: { userid, clientid },
+        userType,
+        knexInstance 
+      } = req;
+
+      const identifiers = { userId: userid, clientId: clientid };
+
+      const deletedClientId = await deleteOneClient(identifiers, userType, knexInstance);
+
       return res.status(200).json(deletedClientId);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);

@@ -2,7 +2,8 @@ const types = require('pg').types;
 types.setTypeParser(20, function(value){
   return parseInt(value, 10)
 })
-const { strParseOut } = require('../utils/utility-functions');
+const { strParseOut, batchDeletePictures } = require('../utils/utility-functions');
+const { deleteFolder, getFolder } = require('../utils/cloudinary');
 
 function getClientDetailStructure (client) {
   return {
@@ -103,19 +104,36 @@ async function updateOneClient (knex, params, clientData, t, clientLang) {
   }
 }
 
-async function deleteOneClient (knex, params) {
-  const { userid, clientid } = params;
-
+async function deleteOneClient (identifiers, userType, knexInstance) {
   try {
-  const deletedClient = await knex('clients')
-    .where('user_id', '=', userid)
-    .andWhere('client_id', '=', clientid)
-    .del()
-    .returning('*')
+    const { userId, clientId } = identifiers;
 
-  console.log('deletedClient: ', deletedClient);
+    const clientEstates = await knexInstance('estates')
+      .select('estate_id')
+      .where('client_id', clientId)
+      .returning('*');
 
-  return deletedClient[0].client_id;
+    const deletedFolders = await Promise.all(clientEstates.map(async est => {
+      identifiers.estateId = est.estate_id // this creates a side effect
+
+      const deletedPicturesFromCloudinary = await batchDeletePictures('estate_id', identifiers, userType, knexInstance);
+
+      console.log('deletedPicturesFromCloudinary: ', deletedPicturesFromCloudinary);
+        const deleted = await deleteFolder(getFolder('estate', userId, est.estate_id));
+        return deleted;
+    }));
+    console.log('deletedFolders: ', deletedFolders);
+
+
+    const [ deletedClient ] = await knexInstance('clients')
+      .where('user_id', userId)
+      .andWhere('client_id', clientId)
+      .del()
+      .returning('*')
+
+    console.log('deletedClient: ', deletedClient);
+
+    return Number(deletedClient.client_id)
 
   } catch (error) {
     console.log(error)

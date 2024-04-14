@@ -16,6 +16,6 @@ listingsRouter.get('/:userid/:clientid/:estateid', httpGetOneListing(knex));
 listingsRouter.get('/:userid/:clientid/:estateid/:group', httpGetOneListing(knex));
 listingsRouter.post('/:userid', httpPostListing(knex));
 listingsRouter.put('/:userid/:clientid/:estateid/:contractid', httpPostListing(knex));
-listingsRouter.delete('/:userid/:listingid', httpDeleteOneListing(knex));
+listingsRouter.delete('/:userid/:estateid', httpDeleteOneListing(knex));
 
 module.exports = listingsRouter;

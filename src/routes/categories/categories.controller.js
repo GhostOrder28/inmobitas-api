@@ -78,9 +78,13 @@ function httpPatchCategoriesPosition () {
 
 function httpDeleteCategory () {
   return async (req, res) => {
-    const { params: { categoryid, userid, estateid }, knexInstance, user: { userType } } = req;
     try {
-      const deletedCategory = await deleteCategory(knexInstance, userid, estateid, categoryid, userType);
+      const { params: { userid, estateid, categoryid }, knexInstance, user: { userType } } = req;
+
+      const identifiers = { userId: userid, estateId: estateid, categoryId: categoryid };
+
+      const deletedCategory = await deleteCategory(knexInstance, identifiers, userType);
+
       return res.status(200).json(deletedCategory);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
