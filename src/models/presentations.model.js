@@ -14,29 +14,35 @@ async function getPresentation (knex, params, t, userType) {
       .where('user_id', '=', userid)
       .returning('*');
 
-    const documentsData = await knex.select('*')
-      .from('documents')
-      .where('user_id', '=', userid)
-      .andWhere('estate_id', '=', estateid)
+    // const documentsData = await knex.select('*')
+    //   .from('documents')
+    //   .where('user_id', '=', userid)
+    //   .andWhere('estate_id', '=', estateid)
+    //   .returning('*');
+
+    const pictures = await knex('categories')
+      .where('categories.estate_id', estateid)
+      .join('pictures', 'categories.category_id', 'pictures.category_id')
+      .orderBy('category_position', 'picture_position')
       .returning('*');
 
-    console.log('documentsData: ', documentsData);
-
-    const listingImages = await knex('pictures')
-      .where('user_id', '=', userid)
-      .andWhere('estate_id', '=', estateid)
-      .returning('*');
-    console.log('pictures from db: ', listingImages);
-    const urls = listingImages.map(img => {
-      if (img.auto_generated) {
-        return getGuestPictureUrl(img.filename, 'large');
+    const picturesWithUrl = pictures.map(p => {
+      if (p.auto_generated) {
+        return { ...p, url: getGuestPictureUrl(p.filename, 'large') };
       } else {
-        return getPictureUrl(userid, estateid, img.filename, 'large', userType);
+        return { ...p, url: getPictureUrl(userid, estateid, p.filename, 'large', userType) };
       }
     });
-    console.log('pictures urls: ', urls);
-    const pdfBuffer = await pdfBuilder(urls, userData[0], contactMessage);
-  
+
+    const categories = [ ...new Set(pictures.map(p => p.name)) ] // this is the name of the category probably needs refactor
+
+    const groupedPictures = categories.map(categoryName => {
+      const pictures = picturesWithUrl.filter(p => p.name === categoryName); // i should find a better naming for this, cause it is already used in another scope
+      return { categoryName, pictures }
+    });
+
+    const pdfBuffer = await pdfBuilder(groupedPictures, userData[0], contactMessage);
+
     return pdfBuffer;
 
   } catch (error) {

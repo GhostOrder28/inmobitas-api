@@ -23,7 +23,7 @@ async function getAllPictures (knex, params, userType) {
         pictureId: pic.picture_id,
         filename: pic.filename,
         categoryId: pic.category_id,
-        position: pic.position,
+        picturePosition: pic.picture_position,
         smallSizeUrl: pic.auto_generated ?
           getGuestPictureUrl(pic.filename, 'small') :
           getPictureUrl(userid, estateid, pic.filename, 'small', userType),
@@ -122,7 +122,7 @@ async function postPicture (knex, params, file, userType, categoryId, position) 
         estate_id: estateid,
         filename,
         category_id: !isNaN(categoryId) ? categoryId : null,
-        position,
+        picture_position: position,
       })
         .into('pictures')
         .returning('*')
@@ -133,7 +133,7 @@ async function postPicture (knex, params, file, userType, categoryId, position) 
         smallSizeUrl: getPictureUrl(userid, estateid, picture.filename, 'small', userType),
         largeSizeUrl: getPictureUrl(userid, estateid, picture.filename, 'large', userType),
         categoryId: picture.category_id,
-        position: picture.position,
+        picturePosition: picture.picture_position,
       } 
 
       console.log('formattedPicture: ', formattedPicture);
@@ -171,13 +171,13 @@ async function patchPicturesPositionFromCategory (knexInstance, userid, estateid
 
   if (!pictures.length) return [];
 
-  const ordered = sortEntities(pictures, 'position')
+  const ordered = sortEntities(pictures, 'picture_position')
 
-  const positionUpdated = ordered.map((p, idx) => ({ picture_id: p.picture_id, position: idx + 1 }));
+  const positionUpdated = ordered.map((p, idx) => ({ picture_id: p.picture_id, picture_position: idx + 1 }));
 
   const updatedData = await Promise.all(positionUpdated.map(async p => {
     const [ updatedPicture ] = await knexInstance('pictures')
-      .update({ position: p.position })
+      .update({ picture_position: p.picture_position })
       .where('picture_id', p.picture_id)
       .returning('*');
 

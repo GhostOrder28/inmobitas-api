@@ -18,6 +18,7 @@ ARG ENABLE_ALPINE_PRIVATE_NETWORKING
 COPY . /app
 
 RUN npm install
+RUN npm install --cpu=x64 --os=linux --libc=musl sharp
 
 CMD [ "npm", "run", "start" ]
 

@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "sleep 4 && node src/server.js",
+    "start": "node src/server.js",
     "watch": "nodemon server.js"
   },
   "author": "GhostOrder28",
   "license": "ISC",
   "dependencies": {
     "base64-img": "^1.0.4",
-    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "buffer-image-size": "^0.6.4",
     "cloudinary": "^1.29.1",
     "cookie-parser": "^1.4.6",
@@ -41,7 +41,7 @@
     "pdfkit": "^0.13.0",
     "pg": "^8.7.3",
     "pg-error-constants": "^1.0.0",
-    "sharp": "^0.30.3",
+    "sharp": "^0.33.4",
     "to-arraybuffer": "^1.0.1",
     "uuid": "^8.3.2"
   },

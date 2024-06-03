@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { ValidationError, DbConnectionError } = require('../errors/api-errors');
 const { AuthenticationError, InvalidAuthorizationError } = require('../errors/db-errors');
 

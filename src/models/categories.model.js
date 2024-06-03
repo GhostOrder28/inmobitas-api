@@ -1,4 +1,4 @@
-const { formatDbResponse, batchDeletePictures } = require('../utils/utility-functions');
+const { formatDbResponse, batchDeletePictures, formatRequestBody } = require('../utils/utility-functions');
 
 async function getAllCategories (knex, estateid) {
   try {
@@ -18,8 +18,9 @@ async function getAllCategories (knex, estateid) {
 
 async function postCategory (knex, estateid, body) {
   try {
+    body = formatRequestBody(body)
     const [ newCategory ] = await knex('categories')
-      .insert({ ...body, estate_id: estateid })
+      .insert({ ...body, estate_id: estateid  })
       .returning('*');
 
     const formattedCategory = formatDbResponse(newCategory);

@@ -56,11 +56,27 @@ const pxToMm = (px, dpi) => ((px * 25.4) / dpi)
 function formatDbResponse (obj) {
   const keys = Object.keys(obj);
   const formattedResponse = keys.reduce((acc, currentKey) => {
-    const camelCased = currentKey.replace(/\_([a-z])/g, function (g) { return g[1].toUpperCase() })
+    const camelCased = currentKey.replace(/\_([a-z])/g, matchedToCamelCase)
     return { ...acc, [camelCased]: obj[currentKey] }
   }, {});
   return formattedResponse;
 }
+
+function formatRequestBody (obj) {
+  const keys = Object.keys(obj);
+  return keys.reduce((acc, currentKey) => {
+    const snakeCased = currentKey.replace(/[A-Z]/g, matchedToSnakeCase)
+    return { ...acc, [snakeCased]: obj[currentKey] }
+  }, {});
+}
+
+function matchedToSnakeCase (matched) {
+  return `_${matched.toLowerCase()}`
+};
+
+function matchedToCamelCase (matches) {
+  return matches[1].toUpperCase() 
+};
 
 function sortEntities (arr, key) {
   const clonedArr = [ ...arr ];
@@ -114,6 +130,7 @@ module.exports = {
   cloudinaryUnsignedUploader,
   pxToMm,
   formatDbResponse,
+  formatRequestBody,
   sortEntities,
   batchDeletePictures,
 }
