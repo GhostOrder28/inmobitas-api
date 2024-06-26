@@ -39,7 +39,7 @@ const listingPresetsRouter = require('./routes/listing-presets/listing-presets.r
 
 // const server = https.createServer({
 //   cert: fs.readFileSync(`${path.resolve()}/src/security/cert.pem`),
-//   key: fs.readFileSync(`${path.resolve()}/src/security/cert.key`)
+//   key: fs.readFileSync(`${path.resolve()}/src/security/key.pem`)
 // }, app);
 
 //options

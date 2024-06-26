@@ -1,3 +1,5 @@
+const { DbConnectionError } = require('../errors/api-errors');
+
 const { strParseOut } = require('../utils/utility-functions');
 
 async function getListingPresets (knex, clientLang) {
@@ -15,9 +17,9 @@ async function getListingPresets (knex, clientLang) {
 
     //console.log('contractTypes: ', contractTypes);
 
-    const currencyTypes = await knex.select('*')
-    .from('currency_types')
-    .returning('*');
+    // const currencyTypes = await knex.select('*')
+    // .from('currency_types')
+    // .returning('*');
 
     //console.log('currencyTypes: ', currencyTypes);
 
@@ -30,18 +32,18 @@ async function getListingPresets (knex, clientLang) {
         contractTypeId: contract.contract_type_id,
         contractName: clientLang.includes('es') ? strParseOut(contract.contract_name_es) : strParseOut(contract.contract_name)
       })),
-      currencyTypes: currencyTypes.map(currency => ({
-        currencyTypeId: currency.currency_type_id,
-        currencyName: clientLang.includes('es') ? strParseOut(currency.currency_name_es) : strParseOut(currency.currency_name),
-        currencySymbol: currency.currency_symbol,
-      }))
+      // currencyTypes: currencyTypes.map(currency => ({
+      //   currencyTypeId: currency.currency_type_id,
+      //   currencyName: clientLang.includes('es') ? strParseOut(currency.currency_name_es) : strParseOut(currency.currency_name),
+      //   currencySymbol: currency.currency_symbol,
+      // }))
     };
 
     //console.log('formattedListingPresets: ', formattedListingPresets);
 
     return formattedListingPresets;
   } catch (err) {
-    throw new Error(err)
+    throw DbConnectionError(err)
   }
 }
 
