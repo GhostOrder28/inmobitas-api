@@ -49,5 +49,6 @@
 	"estateDetails": "Detalles de la propiedad",
 	"yes": "Sí",
 	"no": "No",
-  "noDbConnectionErrorMsg": "El servidor no pudo conectarse a la base de datos, porfavor intenta más tarde."
+  "noDbConnectionErrorMsg": "El servidor no pudo conectarse a la base de datos, porfavor intenta más tarde.",
+  "userSessionExpired": "Tu sesión ha expirado, porfavor vuelve a ingresar."
 }

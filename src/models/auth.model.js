@@ -23,6 +23,11 @@ async function signin (knex, userEmail, t) {
 
     console.log('userCredentials: ', userCredentials);
 
+    if (!userCredentials.length) {
+      console.error(`there is a problem with the database integrity, this user with id ${userProfileData[0].user_id} exist in "users" table but it doesn't in "users_credentials" table`);
+      return null;
+    }
+
     const userData = { ...userProfileData[0], ...userCredentials[0] }
     return userData;
   } catch (error) {

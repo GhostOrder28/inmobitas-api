@@ -20,8 +20,16 @@ class DbConnectionError extends Error {
   }
 }
 
+class UserSessionExpiredError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "UserSessionExpiredError";
+  }
+}
+
 module.exports = {
   ValidationError, 
   AuthorizationError, 
-  DbConnectionError
+  DbConnectionError,
+  UserSessionExpiredError
 };

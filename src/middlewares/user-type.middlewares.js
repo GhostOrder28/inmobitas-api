@@ -1,11 +1,12 @@
 const { knexGuest, knexMain } = require('../knex/knex-config');
-const { AuthenticationError } = require('../errors/db-errors');
+const { UserSessionExpiredError } = require('../errors/api-errors');
 
 function checkUserType (req, res, next) {
   try {
     console.log("either one of these shouldn't be undefined to pass the usertype check");
     console.log('req.user: ', req.user);
     console.log('req.params.usertype: ', req.params.usertype);
+    const { t } = req;
 
     const userTypeInCookie = req.user?.userType || null;
     const userTypeInParams = req.params?.usertype || null;
@@ -18,11 +19,11 @@ function checkUserType (req, res, next) {
       console.log('user is normal')
       req.knexInstance = knexMain;
     } else {
-      throw new AuthenticationError('user type is undefined, please log in again');
+      throw new UserSessionExpiredError(t('userSessionExpired'));
     }
     next();
   } catch (err) {
-    if (err instanceof AuthenticationError) next(err);
+    if (err instanceof UserSessionExpiredError) next(err);
     console.log(`there is an error when checking user type: ${err}`);
   }
 }
