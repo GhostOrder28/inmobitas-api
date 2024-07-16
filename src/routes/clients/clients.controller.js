@@ -20,13 +20,14 @@ function httpGetOneClient () {
 }
 
 function httpGetAllClients () {
-  return async (req, res) => {
+  return async (req, res, next) => {
     const { params, knexInstance } = req;
     try {
       const clients = await getAllClients(knexInstance, params);
       return res.status(200).json(clients);
     } catch (error) {
-      throw new Error(`There is an error, ${error}`);
+      next(error)
+      // throw new Error(`There is an error, ${error}`);
     }
   }
 }

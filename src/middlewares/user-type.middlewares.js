@@ -22,9 +22,9 @@ function checkUserType (req, res, next) {
       throw new UserSessionExpiredError(t('userSessionExpired'));
     }
     next();
-  } catch (err) {
-    if (err instanceof UserSessionExpiredError) next(err);
-    console.log(`there is an error when checking user type: ${err}`);
+  } catch (error) {
+    if (error instanceof UserSessionExpiredError) next(error);
+    console.log(`there is an error when checking user type: ${error}`);
   }
 }
 

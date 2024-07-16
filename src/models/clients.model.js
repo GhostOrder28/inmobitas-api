@@ -67,7 +67,7 @@ async function getAllClients (knex, params) {
     return formattedClients; 
     
   } catch (error) {
-    throw new Error(error);
+    throw error
   }
 }
 

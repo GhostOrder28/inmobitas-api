@@ -36,9 +36,20 @@ function httpSignin () {
           session: true
         },
         function (err, user, info) {
-          if (err) throw new Error(err);
+          // TODO: In all these three cases I should throw the error instead of calling
+          // next inmediatelly but as this function is written currently the throwed 
+          // error would go into the second function and I don't have control over 
+          // that one so the error is lost without proper handling it, this is another 
+          // reason why I need to refactor the whole local authentication in a cleaner way,
+          // also according to this unofficial documentation, this argument should be 
+          // the 'verifyCallback' for this strategy, however I already have a verifyCallback 
+          // function in local.passport.js
+          if (err) {
+            console.error(err)
+            return next(err) 
+          }
           if (info) return next(new AuthenticationError(info.message));
-          if (!user) throw new Error('user is not defined');
+          if (!user) return next(new AuthenticationError(t('userIsUndefinedOnAuth')))
           const userIdentifier = {
             userId: user.userId,
             userType: usertype,
@@ -49,8 +60,7 @@ function httpSignin () {
       )(req, res, next);
     } catch (error) {
       if (error instanceof ValidationError) return next(error);
-      if (error instanceof DbConnectionError) return next(error);
-      throw new Error(`There is an error, ${error}`);
+      return next(error);
     }
   }
 }
@@ -85,17 +95,21 @@ function httpSignup () {
         error instanceof ValidationError ||
         error instanceof DuplicateEntityError
       ) return next(error);
-      throw new Error(`There is an error, ${error}`);
+      next(error)
     }
   }
 }
 
 function httpSignout () {
-  return async (req, res) => {
-    //req.session = null;
-    await req.logout();
-    console.log('session: ', req.session);
-    return res.send('success!');
+  return async (req, res, next) => {
+    try {
+      //req.session = null;
+      await req.logout();
+      console.log('session: ', req.session);
+      return res.send('success!');
+    } catch (error) {
+      next(error)
+    }
   }
 }
 
@@ -116,7 +130,7 @@ function httpGetUser () {
         return res.status(200).json(formatDbResponse(dbUser[0]));
       } catch (error) {
         if (error instanceof AuthenticationError) return next(error);
-        throw new Error(`There is an error, ${error}`);
+        next(error)
       }
     } else {
       return res.status(400).json({ error: 'there is not logged user yet!' }) // should this be an error?

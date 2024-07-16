@@ -9,7 +9,9 @@ function errorHandler(err, req, res, next) {
   if (err instanceof DuplicateEntityError) return res.status(409).json({ duplicateEntityError: err.message });
   if (err instanceof UnverifiedUserError) return res.status(403).json({ unverifiedUserError: err.errorDetails });
   if (err instanceof DbConnectionError) return res.status(503).json({ dbConnectionError: err.message });
-  next();
+  console.error(err)
+  return res.status(500).json({ serverError: req.t('serverErrorMsg') })
+  // next(); // why did I put this here?
 }
 
 module.exports = {

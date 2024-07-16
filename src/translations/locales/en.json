@@ -50,5 +50,7 @@
 	"yes": "Yes",
 	"no": "No",
   "noDbConnectionErrorMsg": "The server couldn't connect to the database, please try again later.",
-  "userSessionExpired": "Your session has expired, please log in again"
+  "userSessionExpired": "Your session has expired, please log in again.",
+  "serverErrorMsg": "An internal error occurred server side, please wait some minutes and login again. If the issue persist please communicate with the administrator.",
+  "userIsUndefinedOnAuth": "We couldn't authenticate the user, please try again later or communicate with the administrator."
 }

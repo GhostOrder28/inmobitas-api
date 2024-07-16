@@ -139,8 +139,8 @@ async function postPicture (knex, params, file, userType, categoryId, position) 
       console.log('formattedPicture: ', formattedPicture);
 
       return formattedPicture;
-    } catch (err) {
-      throw new Error(`There is an error, ${err}`)
+    } catch (error) {
+      throw new Error(`There is an error, ${error}`)
     }
 }
 

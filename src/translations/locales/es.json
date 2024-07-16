@@ -50,5 +50,7 @@
 	"yes": "Sí",
 	"no": "No",
   "noDbConnectionErrorMsg": "El servidor no pudo conectarse a la base de datos, porfavor intenta más tarde.",
-  "userSessionExpired": "Tu sesión ha expirado, porfavor vuelve a ingresar."
+  "userSessionExpired": "Tu sesión ha expirado, porfavor vuelve a ingresar.",
+  "serverErrorMsg": "Un error interno ocurrió en el servidor, porfavor espera algunos minutos y vuelve a ingresar. Si el problema persiste, porfavor comunícate con el administrador.",
+  "userIsUndefinedOnAuth": "No pudimos autenticar al usuario, porfavor intenta de nuevo más tarde o comunícate con el administrador."
 }
