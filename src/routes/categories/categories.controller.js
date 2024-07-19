@@ -10,11 +10,9 @@ function httpGetAllCategories () {
   return async (req, res) => {
     const { 
       params: { estateid }, knexInstance, 
-      query: { update },
-      user: { userType } 
     } = req;
     try {
-      const categories = await getAllCategories(knexInstance, estateid, userType, update);
+      const categories = await getAllCategories(knexInstance, estateid);
       return res.status(200).json(categories);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
@@ -41,7 +39,6 @@ function httpPatchCategoryName () {
       const {
         params: { categoryid }, 
         knexInstance,
-        user: { userType }, 
         body: { name },
         query: { update }
       } = req;
@@ -51,7 +48,7 @@ function httpPatchCategoryName () {
 
       const updatedName = await patchCategoryName(knexInstance, categoryid, name);
 
-      return res.status(200).json({ updatedName });
+      return res.status(200).json(updatedName);
     } catch (error) {
       throw new Error(`There is an error, ${error}`);
     }
@@ -64,7 +61,6 @@ function httpPatchCategoriesPosition () {
       const {
         params: { estateid }, 
         knexInstance, 
-        user: { userType } 
       } = req;
 
       const updatedCategories = await patchCategoriesPosition(knexInstance, estateid);

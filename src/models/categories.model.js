@@ -39,7 +39,9 @@ async function patchCategoryName (knex, categoryid, newName) {
       .returning('*');
 
     const formattedCategory = formatDbResponse(category);
-    return formattedCategory.name;
+    return {
+      name: formattedCategory.name
+    }
   } catch (err) {
     throw new Error(err);
   }
