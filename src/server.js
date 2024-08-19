@@ -95,7 +95,6 @@ app.use('/events', eventsRouter);
 app.use('/listingpresets', listingPresetsRouter);
 app.use('/checkverified', checkVerifiedRouter);
 app.use(errorHandler);
-//app.use((err, req, res, next) => res.sendStatus(500));
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => { console.log(`Listening to port ${PORT}`) });

@@ -1,5 +1,5 @@
 const { strParseIn, strParseOut, batchDeletePictures } = require('../utils/utility-functions');
-const { getFolder, deleteFolder } = require('../utils/cloudinary');
+const { getFolder, deleteFolder, checkFolder } = require('../utils/cloudinary');
 const { getListingPresets } = require('./listing-presets.model');
 
 function getGroupedListingData (listing, presets, t) {
@@ -468,13 +468,13 @@ async function deleteOneListing (identifiers, userType, knexInstance) {
     const deletedFolder = await deleteFolder(getFolder('estate', userId, estateId, userType));
     console.log('deletedFolder: ', deletedFolder);
 
-    const deletedListing = await knexInstance('estates')
+    const [ { estate_id } ] = await knexInstance('estates')
       .where('user_id', userId)
       .andWhere('estate_id', estateId)
       .del()
       .returning('*')
 
-    return Number(deletedListing[0].estate_id);
+    return Number(estate_id);
 
   } catch (error) {
     console.log(error)

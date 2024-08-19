@@ -56,16 +56,16 @@ async function patchCategoriesPosition (knex, estateid) {
         .returning('*');
 
       const ordered = categories.sort((a, b) => {
-        if (a.position < b.position) return -1;
-        if (a.position > b.position) return 1;
+        if (a.category_position < b.category_position) return -1;
+        if (a.category_position > b.category_position) return 1;
         return 0
       })
 
-      const positionUpdated = ordered.map((c, idx) => ({ category_id: c.category_id, position: idx + 1 }));
+      const positionUpdated = ordered.map((c, idx) => ({ category_id: c.category_id, category_position: idx + 1 }));
 
       const updatedCategories = await Promise.all(positionUpdated.map(async c => {
         const [ updatedCategory ] = await trx('categories')
-          .update({ position: c.position })
+          .update({ category_position: c.category_position })
           .where('category_id', c.category_id)
           .returning('*');
 

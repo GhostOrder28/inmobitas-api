@@ -78,7 +78,13 @@ const deleteFolder = (path) => {
     cloudinary.api.delete_folder(
       path,
       undefined,
-      (error, result) => result ? resolve(result) : reject(error)
+      (error, result) => {
+        if (result) return resolve(result);
+        if (error) {
+          if (error.http_code === 404) return resolve("ERROR 404, folder doesn't exist, but this doesn't affect the application state because it very probably just means that the user never uploaded pictures for this listing so skipping error...");
+          return reject(error)
+        };
+      }
     )
   })
 }

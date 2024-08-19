@@ -117,10 +117,10 @@ async function deleteOneClient (identifiers, userType, knexInstance) {
       identifiers.estateId = est.estate_id // this creates a side effect
 
       const deletedPicturesFromCloudinary = await batchDeletePictures('estate_id', identifiers, userType, knexInstance);
-
       console.log('deletedPicturesFromCloudinary: ', deletedPicturesFromCloudinary);
-        const deleted = await deleteFolder(getFolder('estate', userId, est.estate_id));
-        return deleted;
+
+      const deleted = await deleteFolder(getFolder('estate', userId, est.estate_id));
+      return deleted;
     }));
     console.log('deletedFolders: ', deletedFolders);
 
