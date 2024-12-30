@@ -306,8 +306,8 @@ async function postListing (knex, params, listingData, t, clientLang) {
   if (contractTypeId === 1) clientType = 'seller';
   if (contractTypeId === 2) clientType = 'landlord';
 
-  console.log('LOGGING data sent from frontend:');
-  console.log(listingData);
+  // console.log('LOGGING data sent from frontend:');
+  // console.log(listingData);
 
     try {
 
@@ -319,8 +319,8 @@ async function postListing (knex, params, listingData, t, clientLang) {
           .andWhere('name', '=', strParseIn(clientName))
           .returning('*')
         
-        console.log('clientExists: ', Boolean(existingClient.length));
-        console.log('client``: ', existingClient);
+        // console.log('clientExists: ', Boolean(existingClient.length));
+        // console.log('client``: ', existingClient);
 
         const clientData = existingClient.length ? existingClient : await trx.insert({
           ... clientid ? { client_id: clientid } : {},
@@ -335,7 +335,7 @@ async function postListing (knex, params, listingData, t, clientLang) {
         .returning('*')
         .catch(err => {throw new Error (`Error trying to insert into clients: ${err}`)})
 
-        console.log('clientData:', clientData);
+        // console.log('clientData:', clientData);
 
         const estateData = await trx.insert({
           ... estateid ? { estate_id: estateid } : {},
@@ -357,7 +357,7 @@ async function postListing (knex, params, listingData, t, clientLang) {
         .returning('*')
         .catch(err => {throw new Error (`Error trying to insert into estates: ${err}`)})
 
-        console.log('estateData:', estateData);
+        // console.log('estateData:', estateData);
 
         const contractData = await trx.insert({
           ... contractid ? { contract_id: contractid } : {},
@@ -381,7 +381,7 @@ async function postListing (knex, params, listingData, t, clientLang) {
         .returning('*')
         .catch(err => {throw new Error (`Error trying to insert into contracts: ${err}`)}) 
 
-        console.log('contractData:', contractData);
+        // console.log('contractData:', contractData);
 
         const featuresData = await trx.insert({
           estate_id: estateData[0].estate_id,
@@ -397,7 +397,7 @@ async function postListing (knex, params, listingData, t, clientLang) {
         .returning('*')
         .catch(err => {throw new Error (`Error trying to insert into features: ${err}`)})
 
-        console.log('featuresData:', featuresData);
+        // console.log('featuresData:', featuresData);
 
         let preferencesData = null;
         if (contractTypeId === 2) { // if contractTypeId is 'rental'
@@ -414,7 +414,7 @@ async function postListing (knex, params, listingData, t, clientLang) {
           .catch(err => {throw new Error (`Error trying to insert into owner_preferences: ${err}`)})
 
           preferencesData = data
-          console.log('preferencesData:', preferencesData);
+          // console.log('preferencesData:', preferencesData);
         }
 
         if (contractTypeId === 1) { // if contract has been change from rental to sale, delete the preferences if there were any
@@ -425,7 +425,7 @@ async function postListing (knex, params, listingData, t, clientLang) {
           .catch(err => {throw new Error (`Error trying to select owner_preferences: ${err}`)})
 
 
-          console.log('selectPreferencesData:', selectPreferencesData);
+          // console.log('selectPreferencesData:', selectPreferencesData);
 
           if (selectPreferencesData.length) {
             const deletedPreferences = await trx('owner_preferences')
@@ -433,7 +433,7 @@ async function postListing (knex, params, listingData, t, clientLang) {
             .del()
             .catch(err => {throw new Error (`Error trying to delete from owner_preferences: ${err}`)})
 
-            console.log('deletedPreferences:', deletedPreferences);
+            // console.log('deletedPreferences:', deletedPreferences);
           }
         }
 
@@ -447,7 +447,7 @@ async function postListing (knex, params, listingData, t, clientLang) {
 
         const listingPresets = await getListingPresets(knex, clientLang);
         groupedListing = getGroupedListingData(listingData, listingPresets, t);
-        console.log('groupedListing: ', groupedListing);
+        // console.log('groupedListing: ', groupedListing);
       });
       
       return groupedListing;
