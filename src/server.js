@@ -44,7 +44,7 @@ const listingPresetsRouter = require('./routes/listing-presets/listing-presets.r
 
 //options
 const corsOptions = {
-  origin: process.env.CLIENT_BASE_URL,
+  origin: [ `https://${process.env.CLIENT_BASE_URL}`, `https://www.${process.env.CLIENT_BASE_URL}` ],
   credentials: true,
 }
 const helmetOptions = {
