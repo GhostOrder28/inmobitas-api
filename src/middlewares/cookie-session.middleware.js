@@ -1,7 +1,7 @@
 const cookieSessionOptions = {
   name: 'session',
-  // sameSite: 'none',
-  //secure: true,
+  sameSite: 'none',
+  secure: true,
   // secureProxy: true,
   maxAge: 24 * 60 * 60 * 1000,
   keys: [ process.env.COOKIE_KEY_1, process.env.COOKIE_KEY_2 ]
