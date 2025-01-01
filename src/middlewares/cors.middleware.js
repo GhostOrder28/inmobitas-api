@@ -11,4 +11,6 @@ const corsOptions = {
   credentials: true,
 }
 
+console.log('corsOptions: ', corsOptions);
+
 export default corsOptions
