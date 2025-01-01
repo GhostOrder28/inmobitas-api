@@ -71,7 +71,10 @@ passport.deserializeUser((id, done) => {
   done(null, id); 
 });
 
+app.enable('trust proxy', process.env.NODE_ENV === "production")
+
 //middelwares
+
 app.use(helmet(helmetOptions));
 app.use(cors(corsOptions));
 app.use(cookieSession(cookieSessionOptions));
