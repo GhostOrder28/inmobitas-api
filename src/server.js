@@ -20,6 +20,7 @@ const i18next = require('./translations/i18n-config');
 const localAuth = require('./passport/local.passport');
 const googleAuth = require('./passport/google.passport');
 const { errorHandler } = require('./errors/error-handler');
+const corsOptions = require('./middlewares/cors.middleware')
 const { checkLoggedIn } = require('./middlewares/login.middlewares');
 const { checkUserType } = require('./middlewares/user-type.middlewares');
 const cookieSessionOptions = require('./middlewares/cookie-session.middleware');
@@ -42,11 +43,6 @@ const listingPresetsRouter = require('./routes/listing-presets/listing-presets.r
 //   key: fs.readFileSync(`${path.resolve()}/src/security/key.pem`)
 // }, app);
 
-//options
-const corsOptions = {
-  origin: [ `https://${process.env.CLIENT_BASE_URL}`, `https://www.${process.env.CLIENT_BASE_URL}` ],
-  credentials: true,
-}
 const helmetOptions = {
   contentSecurityPolicy: {
     directives: {
